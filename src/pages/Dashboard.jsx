@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { format, subDays } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { Check, LogOut } from 'lucide-react';
+import { Check, LogOut, Menu, X } from 'lucide-react';
 import HabitForm from '../components/HabitForm';
 import { habitsService, logsService, authService } from '../api/apiService';
 
@@ -74,6 +74,7 @@ export default function Dashboard({ onLogout }) {
   const [showHabitForm, setShowHabitForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Load habits and logs on mount
   useEffect(() => {
@@ -204,9 +205,18 @@ export default function Dashboard({ onLogout }) {
     <div style={styles.app}>
       {/* Top Bar */}
       <div style={styles.topbar}>
-        <div style={styles.logo}>
-          <span style={styles.logoDot} />
-          Habit DNA
+        <div style={styles.topbarLeft}>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            style={styles.menuBtn}
+            title="Меню"
+          >
+            <Menu size={20} />
+          </button>
+          <div style={styles.logo}>
+            <span style={styles.logoDot} />
+            Habit DNA
+          </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
@@ -415,6 +425,44 @@ export default function Dashboard({ onLogout }) {
           isLoading={formLoading}
         />
       )}
+
+      {/* Sidebar */}
+      {sidebarOpen && (
+        <>
+          <div
+            style={styles.sidebarOverlay}
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div style={styles.sidebar}>
+            <div style={styles.sidebarHeader}>
+              <div style={styles.sidebarTitle}>Меню</div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                style={styles.closeBtn}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div style={styles.sidebarContent}>
+              <button style={styles.menuItem}>
+                <span>📊 Статистика</span>
+              </button>
+              <button style={styles.menuItem}>
+                <span>🎯 Цели</span>
+              </button>
+              <button style={styles.menuItem}>
+                <span>📈 Графики</span>
+              </button>
+              <button style={styles.menuItem}>
+                <span>⚙️ Настройки</span>
+              </button>
+              <button style={styles.menuItem}>
+                <span>ℹ️ О приложении</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -430,6 +478,24 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: '16px',
+  },
+  topbarLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  menuBtn: {
+    width: '28px',
+    height: '28px',
+    border: 'none',
+    borderRadius: '6px',
+    background: 'var(--color-background-secondary)',
+    color: 'var(--color-text-primary)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.15s',
   },
   logo: {
     fontSize: '15px',
@@ -604,5 +670,72 @@ const styles = {
     marginTop: '8px',
     fontFamily: 'var(--font-sans)',
     transition: 'all 0.15s',
+  },
+  sidebarOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 998,
+  },
+  sidebar: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '280px',
+    height: '100vh',
+    backgroundColor: 'var(--color-background-primary)',
+    borderRight: '0.5px solid var(--color-border-tertiary)',
+    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
+    zIndex: 999,
+    display: 'flex',
+    flexDirection: 'column',
+    animation: 'slideIn 0.3s ease-out',
+  },
+  sidebarHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '16px',
+    borderBottom: '0.5px solid var(--color-border-tertiary)',
+  },
+  sidebarTitle: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: 'var(--color-text-primary)',
+  },
+  closeBtn: {
+    width: '28px',
+    height: '28px',
+    border: 'none',
+    borderRadius: '6px',
+    background: 'var(--color-background-secondary)',
+    color: 'var(--color-text-primary)',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.15s',
+  },
+  sidebarContent: {
+    flex: 1,
+    padding: '8px',
+    overflowY: 'auto',
+  },
+  menuItem: {
+    width: '100%',
+    padding: '12px 16px',
+    border: 'none',
+    borderRadius: '8px',
+    background: 'transparent',
+    color: 'var(--color-text-primary)',
+    fontSize: '14px',
+    cursor: 'pointer',
+    textAlign: 'left',
+    transition: 'all 0.15s',
+    marginBottom: '4px',
+    fontFamily: 'var(--font-sans)',
   },
 };
